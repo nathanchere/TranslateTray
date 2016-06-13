@@ -95,7 +95,8 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "frmMain";
-            this.Text = "TranslateTray";            
+            this.Text = "TranslateTray";
+            this.Load += new System.EventHandler(this.frmMain_Load);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();

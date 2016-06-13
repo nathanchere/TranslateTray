@@ -67,5 +67,10 @@ namespace TranslateTray
 
             notifyIcon.ShowBalloonTip(8000);
         }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            SetWindowVisibility(false);
+        }
     }
 }
