@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="ClipboardNotification.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +84,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\tray.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TranslateTray.Core\TranslateTray.Core.csproj">
+      <Project>{F32380C6-E705-4B3C-B8EE-34C50049E85C}</Project>
+      <Name>TranslateTray.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

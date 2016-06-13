@@ -7,14 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TranslateTray.Core;
 
 namespace TranslateTray
 {
     public partial class frmMain : Form
     {
+        private readonly ITranslationClient client = new TranslationClient();
+
         public frmMain()
         {
-            InitializeComponent();            
+            InitializeComponent();
+
+            ClipboardNotification.ClipboardUpdate += OnClipboardUpdated;
         }
 
         private void frmMain_Resize(object sender, EventArgs e)
@@ -39,6 +44,28 @@ namespace TranslateTray
                 Show();
                 BringToFront();
             }
+        }
+
+        private void OnClipboardUpdated(object sender, EventArgs eventArgs)
+        {
+            var text = Clipboard.GetText(TextDataFormat.Text)?.Trim();
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            try
+            {
+                var newText = client.Translate(text);
+                notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                notifyIcon.BalloonTipTitle = $"Translation for: {(text.Length > 15 ? (text.Substring(0, 15) + '…') : text)}";
+                notifyIcon.BalloonTipText = newText;
+            }
+            catch (Exception ex)
+            {
+                notifyIcon.BalloonTipIcon = ToolTipIcon.Error;
+                notifyIcon.BalloonTipTitle = "Error";
+                notifyIcon.BalloonTipText = ex.Message;
+            }
+
+            notifyIcon.ShowBalloonTip(8000);
         }
     }
 }
