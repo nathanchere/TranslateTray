@@ -42,7 +42,7 @@ namespace TranslateTray
         private void OnClipboardUpdated(object sender, EventArgs eventArgs)
         {
             var text = Clipboard.GetText(TextDataFormat.Text)?.Trim();
-            if (string.IsNullOrWhiteSpace(text)) return;
+            if (string.IsNullOrEmpty(text)) return;
 
             try
             {
