@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TranslateTray.Core;
 
@@ -55,7 +48,7 @@ namespace TranslateTray
             {
                 var newText = client.Translate(text);
                 notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-                notifyIcon.BalloonTipTitle = $"Translation for: {(text.Length > 15 ? (text.Substring(0, 15) + '…') : text)}";
+                notifyIcon.BalloonTipTitle = $"Translation for: {(text.Length > 30 ? (text.Substring(0, 30) + '…') : text)}";
                 notifyIcon.BalloonTipText = newText;
             }
             catch (Exception ex)
