@@ -25,10 +25,20 @@ namespace TranslateTray.Core
         {            
             var rawText = _client.DownloadString(GetTranslationUrl(input));
 
-            if (!rawText.StartsWith("[[[") || !rawText.EndsWith($"]],,\"{FromLanguage}\"]"))
+            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(GetTranslationUrl(input));            
+            httpRequest.UserAgent = "Mozilla/5.0";
+            HttpWebResponse webResponse = (HttpWebResponse)httpRequest.GetResponse();
+            using (StreamReader responseStream = new StreamReader(webResponse.GetResponseStream()))
+            {
+                rawText = responseStream.ReadToEnd();
+            }
+
+
+
+            if (!rawText.StartsWith("[[[") || !rawText.EndsWith($",\"{FromLanguage}\"]"))
                 throw new InvalidDataException("Expected result in a different format");
 
-            var result = rawText.Substring(4, rawText.IndexOf($"\",\"{input}\",,,") - 4);
+            var result = rawText.Substring(4, rawText.IndexOf($"\",\"") - 4);
 
             return result;
         }
