@@ -22,9 +22,8 @@ namespace TranslateTray.Core.Tests
         {
             ITranslationClient client = new TranslationClient();
 
-            var input = "Nej. Ja,]\" Kanske. Dålig.";
-            input = "ananas";
-            var expected = "No. Yes,] Perhaps.";
+            var input = "Nej. Ja, Kanske. Dålig.";            
+            var expected = "No.  Yes ~ Maybe.  Bad.";
 
             var result = client.Translate(input);
 
