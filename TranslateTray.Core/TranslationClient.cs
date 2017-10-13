@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -49,44 +50,21 @@ namespace TranslateTray.Core
 
             // Drop opening/closing brace and tailing fields
             var innerInput = Debrace(Debrace(input).Substring(0, input.Length - ",null,'sv'".Length - 2));
-            foreach (var current in GetTranslations(innerInput))
-            {
-            }
 
-            return string.Join(" ", results.ToArray());
+            return string.Join(" ", GetTranslations(innerInput).ToArray());
         }
 
         private IEnumerable<string> GetTranslations(string input)
         {            
             var index = 0;
-            var results = new List<string>();
 
-            index += 2; // skip the ["
+            var segments = input.Split(new [] {"],["}, StringSplitOptions.RemoveEmptyEntries);
 
-            var nextResult = new StringBuilder();
+            foreach (var segment in segments)
+            {
+                var current = Debrace(segment);
+                var items = current.Split(',');
 
-            while (index < input.Length)
-            {                                    
-                switch (input[index])
-                {
-                    case '\\':
-                        if (input[index + 1] == '"')
-                        {
-                            index++;
-                            nextResult.Append('"');
-                        }
-                        break;
-
-                    case '"':
-                        results.Add(nextResult.ToString());
-                        nextResult = new StringBuilder();
-                        break;
-                        
-                    default:
-                        nextResult.Append(input[index]);
-                        break;
-                }
-                index++;                             
             }
             yield break;
         }

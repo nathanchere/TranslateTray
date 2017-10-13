@@ -21,7 +21,9 @@ namespace TranslateTray.Core.Tests
         public void Translate_returns_translations_for_multiple_fragments()
         {
             ITranslationClient client = new TranslationClient();
+
             var input = "Nej. Ja,]\" Kanske. Dålig.";
+            input = "ananas";
             var expected = "No. Yes,] Perhaps.";
 
             var result = client.Translate(input);
