@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -24,28 +26,77 @@ namespace TranslateTray.Core
         public string Translate(string input)
         {            
             var rawText = _client.DownloadString(GetTranslationUrl(input));
-
-            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(GetTranslationUrl(input));            
-            httpRequest.UserAgent = "Mozilla/5.0";
-            HttpWebResponse webResponse = (HttpWebResponse)httpRequest.GetResponse();
-            using (StreamReader responseStream = new StreamReader(webResponse.GetResponseStream()))
-            {
-                rawText = responseStream.ReadToEnd();
-            }
-
-
-
-            if (!rawText.StartsWith("[[[") || !rawText.EndsWith($",\"{FromLanguage}\"]"))
-                throw new InvalidDataException("Expected result in a different format");
-
-            var result = rawText.Substring(4, rawText.IndexOf($"\",\"") - 4);
-
-            return result;
+            return new TranslationParser().ParseText(rawText);            
         }
-
+        
         private string GetTranslationUrl(string input)
         {
             return $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={FromLanguage}&tl={ToLanguage}&dt=t&q={EncodeQuery(input)}";
+        }
+    }
+
+    public class TranslationParser
+    {
+        public string FromLanguage => "sv";
+        public string ToLanguage => "en";
+
+        public string ParseText(string input)
+        {
+            if (!input.StartsWith("[[[") || !input.EndsWith($",\"{FromLanguage}\"]"))
+                throw new InvalidDataException("Expected result in a different format");
+
+            var results = new List<string>();
+
+            // Drop opening/closing brace and tailing fields
+            var innerInput = Debrace(Debrace(input).Substring(0, input.Length - ",null,'sv'".Length - 2));
+            foreach (var current in GetTranslations(innerInput))
+            {
+            }
+
+            return string.Join(" ", results.ToArray());
+        }
+
+        private IEnumerable<string> GetTranslations(string input)
+        {            
+            var index = 0;
+            var results = new List<string>();
+
+            index += 2; // skip the ["
+
+            var nextResult = new StringBuilder();
+
+            while (index < input.Length)
+            {                                    
+                switch (input[index])
+                {
+                    case '\\':
+                        if (input[index + 1] == '"')
+                        {
+                            index++;
+                            nextResult.Append('"');
+                        }
+                        break;
+
+                    case '"':
+                        results.Add(nextResult.ToString());
+                        nextResult = new StringBuilder();
+                        break;
+                        
+                    default:
+                        nextResult.Append(input[index]);
+                        break;
+                }
+                index++;                             
+            }
+            yield break;
+        }
+
+        private string Debrace(string input)
+        {
+            if (!input.StartsWith("[") || !input.EndsWith("]"))
+                throw new InvalidDataException("Expected result in a different format");
+
+            return input.Substring(1, input.Length - 2);
         }
     }
 }

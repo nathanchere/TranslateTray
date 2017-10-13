@@ -18,6 +18,18 @@ namespace TranslateTray.Core.Tests
         }
 
         [Fact]
+        public void Translate_returns_translations_for_multiple_fragments()
+        {
+            ITranslationClient client = new TranslationClient();
+            var input = "Nej. Ja,]\" Kanske. Dålig.";
+            var expected = "No. Yes,] Perhaps.";
+
+            var result = client.Translate(input);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
         public void Translate_handles_realworld_text_copies_without_crashing()
         {
             ITranslationClient client = new TranslationClient();
